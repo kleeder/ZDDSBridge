@@ -1,57 +1,85 @@
 import discord
-import time
 import asyncio
-import random
 import SECRETS
 from discord.ext import commands
-import sys
-import time
 import telepot
 from SECRETS import API_KEY
+from telepot.aio.delegate import per_chat_id, create_open, pave_event_space
+from telepot.aio.loop import MessageLoop
 
 Client = discord.Client()
 client = commands.Bot(command_prefix = "!")
 client.remove_command('help')
 
 @client.event
+async def on_ready():
+    print("Ready!")
+
+@client.event
 async def on_message(message):
-    # check if the message was sent in a private chat
-    privateChat = message.channel.name == None
+    channel = message.channel.id == "535069981688463376" #debug
+    #channel = message.channel.id == "223872448842563585" #moin
 
-    # check in which channel the message was sent
-    # debug = message.channel.id == "535069981688463376"
-    owouwuqwq = message.channel.id == "535950032898228245"
-    # statsChannel = message.channel.id == "537938898345656331"
+    byBot = message.author.id == "672203005155737695"
 
-    # check if the message author is botti himself
-    byBot = message.author.bot
-
-    if not byBot and owouwuqwq:
-        pass
-
-    elif not byBot and not privateChat:
-
-        # time to check for commands
+    if not byBot and channel:
         if len(message.attachments) < 1:
-            # print(message.content)
-            msg = "{} @ {} \n{}".format(message.author, message.channel, message.content)
-            send_telegram_msg(msg)
+            msg = "{}:\n{}".format(message.author.display_name, message.content)
+            await send_telegram_msg(msg)
         else:
-            # print(message.attachments[0]['url'])
             try:
-                msg = "{} @ {} \n{}".format(message.author, message.channel, message.content)
-                send_telegram_msg(msg)
+                msg = "{}:\n{}".format(message.author.display_name, message.content)
+                await send_telegram_msg(msg)
                 for img in message.attachments:
-                    send_telegram_msg(img['url'])
-                    # print(img.url)
+                    await send_telegram_msg(img['url'])
             except:
                 pass
 
+class MessageHandler(telepot.aio.helper.ChatHandler):
+    def __init__(self, *args, **kwargs):
+        super(MessageHandler, self).__init__(*args, **kwargs)
 
-def send_telegram_msg(msg):
-    bot = telepot.Bot(API_KEY)
-    bot.sendMessage(123456789, msg)
+    async def on_chat_message(self, msg):
+        if msg["from"]["id"] == 124106478:
+            await send_discord_msg(msg["text"])
+        else:
+            pass
+
+
+async def send_telegram_msg(msg):
+    await bot.sendMessage(124106478, msg) # T
+    #await bot.sendMessage(396451685, msg) # D
+
+async def send_m(channel, m):
+    if len(m) > 2000:
+        m1 = m[0:2000]
+        m2 = m[2000:4000]
+        m3 = m[4000:]
+        await asyncio.sleep(0.5)
+        await client.send_message(channel, m1)
+        await client.send_message(channel, m2)
+        await client.send_message(channel, m3)
+    else:
+        await client.send_typing(channel)
+        await asyncio.sleep(0.5)
+        await client.send_message(channel, m)
+
+async def send_discord_msg(msg):
+    kleederServer  = client.get_server("223872448842563585")
+    channel = kleederServer.get_channel("535069981688463376") #debug
+    #channel = kleederServer.get_channel("223872448842563585") #moin
+    if isinstance(msg, list):
+        for m in msg:
+            await send_m(channel, m)
+    else:
+        await send_m(channel, msg)
 
 
 # initialize
+bot = telepot.aio.DelegatorBot(API_KEY, [pave_event_space()(per_chat_id(), create_open, MessageHandler, timeout=20), ])
+loop = asyncio.get_event_loop()
+loop.create_task(MessageLoop(bot).run_forever())
 client.run(SECRETS.TOKEN)
+print('Listening ...')
+
+loop.run_forever()
