@@ -30,7 +30,7 @@ async def on_message(message):
             await send_telegram_msg(msg)
         else:
             try:
-                msg = "{}:\n{}".format(message.author.display_name, message.content)
+                msg = "{}:\n{}\n".format(message.author.display_name, message.content)
                 for img in message.attachments:
                     msg = msg + img['url']
                 await send_telegram_msg(msg)
