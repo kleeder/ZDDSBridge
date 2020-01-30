@@ -27,8 +27,8 @@ async def messageDetails(message):
 
 @client.event
 async def on_message(message):
-    channel = message.channel.id == "535069981688463376" #debug
-    #channel = message.channel.id == "223872448842563585" #moin
+    #channel = message.channel.id == "535069981688463376" #debug
+    channel = message.channel.id == "223872448842563585" #moin
 
     byBot = message.author.id == "672203005155737695"
 
@@ -48,7 +48,7 @@ class MessageHandler(telepot.aio.helper.ChatHandler):
         super(MessageHandler, self).__init__(*args, **kwargs)
 
     async def on_chat_message(self, msg):
-        if msg["from"]["id"] == 124106478:
+        if msg["from"]["id"] == SECRETS.TIMO_ID or msg["from"]["id"] == SECRETS.DODO_ID:
             try:
                 await send_discord_msg(msg["text"])
             except:
@@ -58,8 +58,8 @@ class MessageHandler(telepot.aio.helper.ChatHandler):
 
 
 async def send_telegram_msg(msg):
-    await bot.sendMessage(124106478, msg) # T
-    #await bot.sendMessage(396451685, msg) # D
+    await bot.sendMessage(SECRETS.TIMO_ID, msg)
+    await bot.sendMessage(SECRETS.DODO_ID, msg)
 
 async def send_m(channel, m):
     if len(m) > 2000:
@@ -77,8 +77,8 @@ async def send_m(channel, m):
 
 async def send_discord_msg(msg):
     kleederServer  = client.get_server("223872448842563585")
-    channel = kleederServer.get_channel("535069981688463376") #debug
-    #channel = kleederServer.get_channel("223872448842563585") #moin
+    #channel = kleederServer.get_channel("535069981688463376") #debug
+    channel = kleederServer.get_channel("223872448842563585") #moin
     if isinstance(msg, list):
         for m in msg:
             await send_m(channel, m)
