@@ -48,14 +48,13 @@ class MessageHandler(telepot.aio.helper.ChatHandler):
         super(MessageHandler, self).__init__(*args, **kwargs)
 
     async def on_chat_message(self, msg):
-        if msg["from"]["id"] == SECRETS.TIMO_ID or msg["from"]["id"] == SECRETS.DODO_ID:
+        if msg["from"]["id"] == SECRETS.DODO_ID:
             try:
                 await send_discord_msg(msg["text"])
             except:
                 pass
         else:
             pass
-
 
 async def send_telegram_msg(msg):
     await bot.sendMessage(SECRETS.TIMO_ID, msg)
@@ -84,7 +83,6 @@ async def send_discord_msg(msg):
             await send_m(channel, m)
     else:
         await send_m(channel, msg)
-
 
 # initialize
 bot = telepot.aio.DelegatorBot(API_KEY, [pave_event_space()(per_chat_id(), create_open, MessageHandler, timeout=20), ])
