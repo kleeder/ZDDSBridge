@@ -43,18 +43,30 @@ async def on_message(message):
             except:
                 pass
 
+async def on_chat_Handler(msg, current_chat):
+    if (msg["text"]).lower() == "!help":
+        msg = "Hier ist eine Auflistung aller Commands: \n \nAllgemeine Commands:\n!code\n!giveexp <username> <amount>\n!levelup\n!levelup <username>\n!botbr <botbr username>\n!botbrlevelup <botbr username>\n!battle\n!ohb\n!entryid <number>\n!calc\n!jevil\n!cat\n!meme\n!dab\n!kudos\n!kudosboard\n!kudosrandom\n!kudosamount <value>\n!ampel\n!vermouth\n!teletext\n!help \n \nDeutsche Commands:\n!rauchtal\n!ludniver\n!halil\n!mrbody\n!tjf\n!nils\n!leon\n!julia\n!vova\n!marie\n!kleederbros\n!adrian\n!henni\n!phil\n!janos\n!alex\n!ali\n!peterfox\n!yoga\n!resi\n!mimi\n!betohow"
+        await bot.sendMessage(current_chat, msg)
+    else:
+        try:
+            await send_discord_msg(msg["text"])
+        except:
+            await bot.sendMessage(current_chat, msg)
+
 class MessageHandler(telepot.aio.helper.ChatHandler):
     def __init__(self, *args, **kwargs):
         super(MessageHandler, self).__init__(*args, **kwargs)
 
     async def on_chat_message(self, msg):
-        if msg["from"]["id"] == SECRETS.DODO_ID:
-            try:
-                await send_discord_msg(msg["text"])
-            except:
-                pass
+        if msg["from"]["id"] == SECRETS.TIMO_ID:
+            current_chat = SECRETS.TIMO_ID
+            await on_chat_Handler(msg, current_chat)
+        elif msg["from"]["id"] == SECRETS.DODO_ID:
+            current_chat = SECRETS.DODO_ID
+            await on_chat_Handler(msg, current_chat)
         else:
             pass
+
 
 async def send_telegram_msg(msg):
     await bot.sendMessage(SECRETS.TIMO_ID, msg)
