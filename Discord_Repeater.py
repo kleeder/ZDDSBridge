@@ -14,6 +14,7 @@ client.remove_command('help')
 @client.event
 async def on_ready():
     print("Ready!")
+    await client.change_presence(game=discord.Game(name='Only active in moin!'))
 
 @client.event
 async def on_message(message):
@@ -41,7 +42,10 @@ class MessageHandler(telepot.aio.helper.ChatHandler):
 
     async def on_chat_message(self, msg):
         if msg["from"]["id"] == 124106478:
-            await send_discord_msg(msg["text"])
+            try:
+                await send_discord_msg(msg["text"])
+            except:
+                pass
         else:
             pass
 
