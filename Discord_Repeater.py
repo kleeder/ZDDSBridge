@@ -17,14 +17,6 @@ async def on_ready():
     print("Ready!")
     await client.change_presence(game=discord.Game(name='Only active in moin!'))
 
-async def messageDetails(message):
-    newMessage = message.content
-    #matchObj = re.match(r'(.*)<:(.*):(.*?)>(.*)', newMessage)
-    #if matchObj:
-    #    newMessage = (matchObj.group(1)) + "https://cdn.discordapp.com/emojis/{}.png?v=1".format(matchObj.group(3)) + (matchObj.group(4))
-    msg = "{}:\n{}".format(message.author.display_name, newMessage)
-    await send_telegram_msg(msg)
-
 @client.event
 async def on_message(message):
     #channel = message.channel.id == "535069981688463376" #debug
@@ -34,12 +26,14 @@ async def on_message(message):
 
     if not byBot and channel:
         if len(message.attachments) < 1:
-            await messageDetails(message)
+            msg = "{}:\n{}".format(message.author.display_name, message.content)
+            await send_telegram_msg(msg)
         else:
             try:
-                await messageDetails(message)
+                msg = "{}:\n{}".format(message.author.display_name, message.content)
                 for img in message.attachments:
-                    await send_telegram_msg(img['url'])
+                    msg = msg + img['url']
+                await send_telegram_msg(msg)
             except:
                 pass
 
@@ -70,7 +64,10 @@ class MessageHandler(telepot.aio.helper.ChatHandler):
 
 async def send_telegram_msg(msg):
     await bot.sendMessage(SECRETS.TIMO_ID, msg)
-    await bot.sendMessage(SECRETS.DODO_ID, msg)
+    try:
+        await bot.sendMessage(SECRETS.DODO_ID, msg)
+    except:
+        pass
 
 async def send_m(channel, m):
     if len(m) > 2000:
