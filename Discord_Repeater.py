@@ -6,6 +6,7 @@ import telepot
 from SECRETS import API_KEY
 from telepot.aio.delegate import per_chat_id, create_open, pave_event_space
 from telepot.aio.loop import MessageLoop
+import re
 
 Client = discord.Client()
 client = commands.Bot(command_prefix = "!")
@@ -16,6 +17,14 @@ async def on_ready():
     print("Ready!")
     await client.change_presence(game=discord.Game(name='Only active in moin!'))
 
+async def messageDetails(message):
+    newMessage = message.content
+    #matchObj = re.match(r'(.*)<:(.*):(.*?)>(.*)', newMessage)
+    #if matchObj:
+    #    newMessage = (matchObj.group(1)) + "https://cdn.discordapp.com/emojis/{}.png?v=1".format(matchObj.group(3)) + (matchObj.group(4))
+    msg = "{}:\n{}".format(message.author.display_name, newMessage)
+    await send_telegram_msg(msg)
+
 @client.event
 async def on_message(message):
     channel = message.channel.id == "535069981688463376" #debug
@@ -25,12 +34,10 @@ async def on_message(message):
 
     if not byBot and channel:
         if len(message.attachments) < 1:
-            msg = "{}:\n{}".format(message.author.display_name, message.content)
-            await send_telegram_msg(msg)
+            await messageDetails(message)
         else:
             try:
-                msg = "{}:\n{}".format(message.author.display_name, message.content)
-                await send_telegram_msg(msg)
+                await messageDetails(message)
                 for img in message.attachments:
                     await send_telegram_msg(img['url'])
             except:
