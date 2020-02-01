@@ -63,7 +63,14 @@ class MessageHandler(telepot.aio.helper.ChatHandler):
 
 
 async def send_telegram_msg(msg):
-    await bot.sendMessage(SECRETS.TIMO_ID, msg)
+    try:
+        await bot.sendMessage(SECRETS.TIMO_ID, msg)
+    except:
+        pass
+    try:
+        await bot.sendMessage(SECRETS.NILS_ID, msg)
+    except:
+        pass
     try:
         await bot.sendMessage(SECRETS.DODO_ID, msg)
     except:
