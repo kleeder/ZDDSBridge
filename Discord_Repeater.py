@@ -15,14 +15,14 @@ client.remove_command('help')
 @client.event
 async def on_ready():
     print("Ready!")
-    await client.change_presence(game=discord.Game(name='Only active in moin!'))
+    await client.change_presence(status=discord.Status.online, activity=discord.Game(name='Only active in moin!'))
 
 @client.event
 async def on_message(message):
-    #channel = message.channel.id == "535069981688463376" #debug
-    channel = message.channel.id == "223872448842563585" #moin
+    #channel = message.channel.id == SECRETS.DEBUG_CH #debug
+    channel = message.channel.id == SECRETS.MAIN_CH #moin
 
-    byBot = message.author.id == "672203005155737695"
+    byBot = message.author.id == SECRETS.BOT_ID
 
     if not byBot and channel:
         if len(message.attachments) < 1:
@@ -82,18 +82,18 @@ async def send_m(channel, m):
         m2 = m[2000:4000]
         m3 = m[4000:]
         await asyncio.sleep(0.5)
-        await client.send_message(channel, m1)
-        await client.send_message(channel, m2)
-        await client.send_message(channel, m3)
+        await channel.send(m1)
+        await channel.send(m2)
+        await channel.send(m3)
     else:
-        await client.send_typing(channel)
+        await channel.trigger_typing()
         await asyncio.sleep(0.5)
-        await client.send_message(channel, m)
+        await channel.send(m)
 
 async def send_discord_msg(msg):
-    kleederServer  = client.get_server("223872448842563585")
-    #channel = kleederServer.get_channel("535069981688463376") #debug
-    channel = kleederServer.get_channel("223872448842563585") #moin
+    kleederServer = client.get_guild(SECRETS.SERVER_ID)
+    #channel = kleederServer.get_channel(SECRETS.DEBUG_CH) #debug
+    channel = kleederServer.get_channel(SECRETS.MAIN_CH) #moin
     if isinstance(msg, list):
         for m in msg:
             await send_m(channel, m)
