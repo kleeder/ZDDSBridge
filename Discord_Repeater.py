@@ -6,7 +6,6 @@ import telepot
 from SECRETS import API_KEY
 from telepot.aio.delegate import per_chat_id, create_open, pave_event_space
 from telepot.aio.loop import MessageLoop
-import re
 
 
 ### DISCORD STUFF ###
@@ -32,13 +31,13 @@ async def on_message(message):
 
     if not byBot and channel:
         if len(message.attachments) < 1:
-            msg = "{}:\n{}".format(message.author.display_name, message.content)
+            msg = "{}:\n{}".format(message.author.display_name, message.clean_content)
             await send_telegram_msg(msg)
         else:
             try:
-                msg = "{}:\n{}\n".format(message.author.display_name, message.content)
+                msg = "{}:\n{}\n".format(message.author.display_name, message.clean_content)
                 for img in message.attachments:
-                    msg = msg + img['url']
+                    msg = msg + img.url
                 await send_telegram_msg(msg)
             except:
                 pass
@@ -73,14 +72,10 @@ async def send_discord_msg(msg):
 
 # telegram message handler
 async def on_chat_Handler(msg, current_chat):
-    if (msg["text"]).lower() == "!help":
-        msg = "Hier ist eine Auflistung aller Commands: \n \nAllgemeine Commands:\n!code\n!giveexp <username> <amount>\n!levelup\n!levelup <username>\n!botbr <botbr username>\n!botbrlevelup <botbr username>\n!battle\n!ohb\n!entryid <number>\n!calc\n!jevil\n!cat\n!meme\n!dab\n!kudos\n!kudosboard\n!kudosrandom\n!kudosamount <value>\n!ampel\n!vermouth\n!teletext\n!help \n \nDeutsche Commands:\n!rauchtal\n!ludniver\n!halil\n!mrbody\n!tjf\n!nils\n!leon\n!julia\n!vova\n!marie\n!kleederbros\n!adrian\n!henni\n!phil\n!janos\n!alex\n!ali\n!peterfox\n!yoga\n!resi\n!mimi\n!betohow"
+    try:
+        await send_discord_msg(msg["text"])
+    except:
         await bot.sendMessage(current_chat, msg)
-    else:
-        try:
-            await send_discord_msg(msg["text"])
-        except:
-            await bot.sendMessage(current_chat, msg)
 
 class MessageHandler(telepot.aio.helper.ChatHandler):
     def __init__(self, *args, **kwargs):
