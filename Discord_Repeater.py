@@ -19,14 +19,12 @@ client.remove_command('help')
 @client.event
 async def on_ready():
     print("Ready!")
-    await client.change_presence(status=discord.Status.online, activity=discord.Game(name='Only active in moin!'))
+    await client.change_presence(status=discord.Status.online, activity=discord.Game(name='{}'.format(SECRETS.gamename)))
 
 # discord message handler
 @client.event
 async def on_message(message):
-    #channel = message.channel.id == SECRETS.DEBUG_CH #debug
-    channel = message.channel.id == SECRETS.MAIN_CH #moin
-
+    channel = message.channel.id == SECRETS.MAIN_CH
     byBot = message.author.id == SECRETS.BOT_ID
 
     if not byBot and channel:
@@ -58,9 +56,8 @@ async def send_m(channel, m):
         await channel.send(m)
 
 async def send_discord_msg(msg):
-    kleederServer = client.get_guild(SECRETS.SERVER_ID)
-    #channel = kleederServer.get_channel(SECRETS.DEBUG_CH) #debug
-    channel = kleederServer.get_channel(SECRETS.MAIN_CH) #moin
+    currentServer = client.get_guild(SECRETS.SERVER_ID)
+    channel = currentServer.get_channel(SECRETS.MAIN_CH)
     if isinstance(msg, list):
         for m in msg:
             await send_m(channel, m)
@@ -82,27 +79,15 @@ class MessageHandler(telepot.aio.helper.ChatHandler):
         super(MessageHandler, self).__init__(*args, **kwargs)
 
     async def on_chat_message(self, msg):
-        if msg["from"]["id"] == SECRETS.TIMO_ID:
-            current_chat = SECRETS.TIMO_ID
-            await on_chat_Handler(msg, current_chat)
-        elif msg["from"]["id"] == SECRETS.DODO_ID:
-            current_chat = SECRETS.DODO_ID
-            await on_chat_Handler(msg, current_chat)
+        if msg["from"]["id"] == SECRETS.CHAT_ID:
+            await on_chat_Handler(msg, SECRETS.CHAT_ID)
         else:
             pass
 
 # send telegram message
 async def send_telegram_msg(msg):
     try:
-        await bot.sendMessage(SECRETS.TIMO_ID, msg)
-    except:
-        pass
-    try:
-        await bot.sendMessage(SECRETS.NILS_ID, msg)
-    except:
-        pass
-    try:
-        await bot.sendMessage(SECRETS.DODO_ID, msg)
+        await bot.sendMessage(SECRETS.CHAT_ID, msg)
     except:
         pass
 
