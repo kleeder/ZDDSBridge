@@ -2,7 +2,7 @@
 Telegram&lt;->Discord Bot for single chat/single server usage.
 
 ## Setup
-Create a discord bot account and a discord bot account. Additionally, create a SECRETS.py where you store the following information:
+Create a telegram bot account and a discord bot account. Additionally, create a SECRETS.py where you store the following information:
 
 * TOKEN = "discord-bot secret token" (String)
 * API_KEY = "telegram-bot secret api-key" (String)
